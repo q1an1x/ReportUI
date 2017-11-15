@@ -220,20 +220,24 @@ class ReportGUI extends PluginBase implements Listener
     private function deleteReportByTarget(string $name)
     {
         $reports = $this->reports->getAll();
-        foreach($reports as $index => $report)
-        {
-            if(strtolower($report['target']) == strtolower($name)) array_splice($reports, $index, 1);
-        }
+        for($i = 0; $i < count($reports); $i ++)
+            if(strtolower($reports[$i]['target']) == strtolower($name))
+            {
+                array_splice($reports, $i, 1);
+                $i --;
+            }
         $this->reports->setAll($reports);
     }
 
     private function deleteReportByReporter(string $name)
     {
         $reports = $this->reports->getAll();
-        foreach($reports as $index => $report)
-        {
-            if(strtolower($report['reporter']) == strtolower($name)) array_splice($reports, $index, 1);
-        }
+        for($i = 0; $i < count($reports); $i ++)
+            if(strtolower($reports[$i]['reporter']) == strtolower($name))
+            {
+                array_splice($reports, $i, 1);
+                $i --;
+            }
         $this->reports->setAll($reports);
     }
 }
