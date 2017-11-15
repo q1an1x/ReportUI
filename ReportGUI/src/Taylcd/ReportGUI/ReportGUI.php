@@ -5,12 +5,14 @@ namespace Taylcd\ReportGUI;
 use jojoe77777\FormAPI\FormAPI;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\event\Listener;
+use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
 
-class ReportGUI extends PluginBase
+class ReportGUI extends PluginBase implements Listener
 {
     /** @var Config */
     protected $lang;
@@ -41,6 +43,7 @@ class ReportGUI extends PluginBase
             $this->getLogger()->warning('Dependency FormAPI not found, disabling...');
             $this->getPluginLoader()->disablePlugin($this);
         }
+        $this->getServer()->getPluginManager()->registerEvents($this, $this);
         $this->getServer()->getScheduler()->scheduleDelayedRepeatingTask(new SaveTask($this), $this->getConfig()->get('save-period', 600) * 20, $this->getConfig()->get('save-period', 600) * 20);
         $this->getServer()->getLogger()->info(TextFormat::AQUA . 'ReportGUI enabled. ' . TextFormat::GRAY . 'Made by Taylcd with ' . TextFormat::RED . "\xe2\x9d\xa4");
     }
@@ -48,6 +51,11 @@ class ReportGUI extends PluginBase
     public function onDisable()
     {
         $this->save();
+    }
+
+    public function onPlayerJoin(PlayerJoinEvent $event)
+    {
+        if($event->getPlayer()->isOp()) if($count = count($this->reports->getAll())) $event->getPlayer()->sendMessage($this->getMessage('admin.unread-reports', $count));
     }
 
     public function getMessage($key, ...$replacement): string
@@ -108,7 +116,7 @@ class ReportGUI extends PluginBase
             if(strtolower($data[1]) == strtolower($sender->getName()))
             {
                 $sender->sendMessage($this->getMessage('gui.cant-report-self'));
-                //return;
+                return;
             }
             $this->selection[$sender->getName()] = $data[1];
             $form = $this->FormAPI->createSimpleForm(function(Player $sender, array $data)
@@ -197,7 +205,7 @@ class ReportGUI extends PluginBase
         $this->reports->setAll($reports);
     }
 
-    protected function save()
+    public function save()
     {
         $this->reports->save();
     }

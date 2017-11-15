@@ -25,6 +25,7 @@
           <root url="phar://D:/Pocketmine-runable/bin/php/pharcommand.phar/" />
           <root url="phar://D:/Pocketmine-runable/plugins/DevTools/Kit_v1.1.0.phar/" />
           <root url="phar://D:/Pocketmine-runable/plugins/DevTools/Kit_v1.1.2.phar/" />
+          <root url="phar://D:/Pocketmine-runable/plugins/DevTools/ReportGUI_v1.0.0.phar/" />
         </CLASSES>
         <SOURCES>
           <root url="phar://D:/Pocketmine-runable/plugins/DevTools/Kit_v1.1.1.phar/" />
@@ -35,6 +36,7 @@
           <root url="phar://D:/Pocketmine-runable/bin/php/pharcommand.phar/" />
           <root url="phar://D:/Pocketmine-runable/plugins/DevTools/Kit_v1.1.0.phar/" />
           <root url="phar://D:/Pocketmine-runable/plugins/DevTools/Kit_v1.1.2.phar/" />
+          <root url="phar://D:/Pocketmine-runable/plugins/DevTools/ReportGUI_v1.0.0.phar/" />
         </SOURCES>
       </library>
     </orderEntry>
