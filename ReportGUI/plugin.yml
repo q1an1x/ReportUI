@@ -1,0 +1,25 @@
+name: ReportGUI
+author: Taylcd
+
+version: 1.0.0
+api:
+  - 3.0.0-ALPHA7
+  - 3.0.0-ALPHA8
+  - 3.0.0-ALPHA9
+
+main: Taylcd\ReportGUI\ReportGUI
+depend: ["FormAPI"]
+
+commands:
+  report:
+    description: Report a player
+    permission: report.use
+  reportadmin:
+    description: Open Report Panel
+    permission: report.admin
+
+permissions:
+  report.use:
+    default: true
+  report.admin:
+    default: op

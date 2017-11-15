@@ -1,0 +1,25 @@
+gui:
+  title: "§eReport"
+  label: "Please enter the name of the player you want to report, be aware that abusing the report system will get yourself banned."
+  input: "Player Name"
+  player-not-found: "§cThis player has never showed up before."
+  content: "You are now reporting §e%0§f.\nPlease select a reason to report."
+  cant-report-self: "§eYou can't report yourself!"
+report:
+  successful: "§eYou report has been submitted. §7(Reported Player: %0, Reason: %1)"
+admin:
+  name-not-entered: "§cPlease enter player's name!"
+  deleted-by-reporter: "§aAll %0's reports have been deleted."
+  deleted-by-target: "§aAll reports related to %0 have been deleted."
+  deleted: "§aThe reported has been deleted."
+  banned: "§ePlayer %0 has been banned and all related reports has been deleted."
+  title: "§eReport Manager"
+  content: "Welcome, administrator!\nPlease select a report to see the details."
+  no-report: "No report."
+  detail: "Player §e%0§f was reported by %1 at %2 for §e%3§f.\nThis player has been reported §e%4§f times on record.\n"
+  button:
+    report: "%0 reported at %1"
+    delete: "Delete this report"
+    delete-all: "Delete all related reports"
+    ban: "§cBan & delete all related reports"
+    back: "Go back"

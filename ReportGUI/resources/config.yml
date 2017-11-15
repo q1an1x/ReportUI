@@ -1,0 +1,8 @@
+save-period: 600
+# Reasons available when report
+reasons:
+  - Harassment
+  - Offensive Profile
+  - Spamming Advertisements
+  - Suspected Cheater/Hacker
+  - Impersonating another player
