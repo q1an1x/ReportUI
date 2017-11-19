@@ -13,3 +13,9 @@ Download compilied plugins here: https://github.com/Taylcd/ReportGUI/releases
 
 ## Configuration
 You can edit default reasons in config.yml.
+
+## ScreenShots
+![1](https://raw.githubusercontent.com/Taylcd/ReportGUI/master/screenshots/1.png)
+![2](https://raw.githubusercontent.com/Taylcd/ReportGUI/master/screenshots/2.png)
+![3](https://raw.githubusercontent.com/Taylcd/ReportGUI/master/screenshots/3.png)
+![4](https://raw.githubusercontent.com/Taylcd/ReportGUI/master/screenshots/4.png)
