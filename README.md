@@ -1,7 +1,9 @@
 # ReportGUI
-A report plugin with GUI, made for RapidCraft Network.
+A report plugin with GUI.
 
 This plugin requires FormAPI(https://github.com/jojoe77777/FormAPI) to run.
+
+Download compilied plugins here: https://github.com/Taylcd/ReportGUI/releases
 
 ## Commands
 - /report - Open Report GUI
