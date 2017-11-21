@@ -1,8 +1,14 @@
 save-period: 600
-# Reasons available when report
+# Default reasons available when report
 reasons:
   - Harassment
   - Offensive Profile
   - Spamming Advertisements
   - Suspected Cheater/Hacker
   - Impersonating another player
+# This will allow players to report with their own reasons.
+allow-custom-reason: true
+
+custom-reason-min-length: 4
+
+custom-reason-max-length: 20

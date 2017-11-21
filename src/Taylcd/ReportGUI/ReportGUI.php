@@ -122,6 +122,26 @@ class ReportGUI extends PluginBase implements Listener
             $form = $this->FormAPI->createSimpleForm(function(Player $sender, array $data)
             {
                 if($data[0] === null) return;
+                if($data[0] == count($this->getConfig()->getAll('reasons')))
+                {
+                    if(!$this->getConfig()->get('allow-custom-reason')) return;
+                    $form = $this->FormAPI->createCustomForm(function(Player $sender, array $data)
+                    {
+                        if (count($data) < 2) return;
+                        if(!$data[1] || strlen($data[1]) < $this->getConfig()->get('custom-reason-min-length', 4) || strlen($data[1]) < $this->getConfig()->get('custom-reason-min-length', 4))
+                        {
+                            $sender->sendMessage($this->getMessage('report.bad-reason'));
+                            return;
+                        }
+                        $this->addReport($sender->getName(), $this->selection[$sender->getName()], $data[1]);
+                        $sender->sendMessage($this->getMessage('report.successful', $this->selection[$sender->getName()], $data[1]));
+                    });
+                    $form->setTitle($this->getMessage('gui.title'));
+                    $form->addLabel($this->getMessage('gui.custom.label', $this->selection[$sender->getName()]));
+                    $form->addInput($this->getMessage('gui.custom.input'));
+                    $form->sendToPlayer($sender);
+                    return;
+                }
                 $this->addReport($sender->getName(), $this->selection[$sender->getName()], $this->getConfig()->get('reasons')[$data[0]] ?? 'None');
                 $sender->sendMessage($this->getMessage('report.successful', $this->selection[$sender->getName()], $this->getConfig()->get('reasons')[$data[0]] ?? 'None'));
             });
@@ -131,6 +151,7 @@ class ReportGUI extends PluginBase implements Listener
             {
                 $form->addButton($reason);
             }
+            if($this->getConfig()->get('allow-custom-reason')) $form->addButton($this->getMessage('gui.custom-reason'));
             $form->sendToPlayer($sender);
         });
         $form->setTitle($this->getMessage('gui.title'));
@@ -162,7 +183,7 @@ class ReportGUI extends PluginBase implements Listener
                     case 2:
                         if(($player = $this->getServer()->getOfflinePlayer($report['target'])) !== null) $player->setBanned(true);
                         $this->deleteReportByTarget($report['target']);
-                        $sender->sendMessage($this->getMessage('banned', $report['target']));
+                        $sender->sendMessage($this->getMessage('admin.banned', $report['target']));
                         return;
                     case 3:
                         $this->sendAdminGUI($sender);
