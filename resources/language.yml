@@ -6,7 +6,7 @@ gui:
   content: "You are now reporting §e%0§f.\nPlease select a reason to report."
   cant-report-self: "§eYou can't report yourself!"
 report:
-  successful: "§eYou report has been submitted. §7(Reported Player: %0, Reason: %1)"
+  successful: "§eYour report has been submitted. §7(Reported Player: %0, Reason: %1)"
 admin:
   name-not-entered: "§cPlease enter player's name!"
   deleted-by-reporter: "§aAll %0's reports have been deleted."
@@ -23,4 +23,4 @@ admin:
     delete-all: "Delete all related reports"
     ban: "§cBan & delete all related reports"
     back: "Go back"
-  unread-reports: "§eThere are %0 unread reports, please check the report manager."
+  unread-reports: "§eThere are §f%0§e new reports."
