@@ -75,6 +75,8 @@ class ReportGUI extends PluginBase implements Listener
         switch($command->getName())
         {
             case 'report':
+                if(!isset($args[0])) unset($this->selection[$sender->getName()]);
+                else $this->selection[$sender->getName()] = $args[0];
                 $this->sendReportGUI($sender);
                 return true;
             case 'reportadmin':
@@ -105,6 +107,11 @@ class ReportGUI extends PluginBase implements Listener
 
     private function sendReportGUI(Player $sender)
     {
+        if(isset($this->selection[$sender->getName()]))
+        {
+            $this->sendReasonSelect($sender);
+            return;
+        }
         $form = $this->FormAPI->createCustomForm(function(Player $sender, array $data)
         {
             if(count($data) < 2) return;
@@ -119,44 +126,49 @@ class ReportGUI extends PluginBase implements Listener
                 return;
             }
             $this->selection[$sender->getName()] = $data[1];
-            $form = $this->FormAPI->createSimpleForm(function(Player $sender, array $data)
-            {
-                if($data[0] === null) return;
-                if($data[0] == count($this->getConfig()->getAll('reasons')))
-                {
-                    if(!$this->getConfig()->get('allow-custom-reason')) return;
-                    $form = $this->FormAPI->createCustomForm(function(Player $sender, array $data)
-                    {
-                        if (count($data) < 2) return;
-                        if(!$data[1] || strlen($data[1]) < $this->getConfig()->get('custom-reason-min-length', 4) || strlen($data[1]) < $this->getConfig()->get('custom-reason-min-length', 4))
-                        {
-                            $sender->sendMessage($this->getMessage('report.bad-reason'));
-                            return;
-                        }
-                        $this->addReport($sender->getName(), $this->selection[$sender->getName()], $data[1]);
-                        $sender->sendMessage($this->getMessage('report.successful', $this->selection[$sender->getName()], $data[1]));
-                    });
-                    $form->setTitle($this->getMessage('gui.title'));
-                    $form->addLabel($this->getMessage('gui.custom.label', $this->selection[$sender->getName()]));
-                    $form->addInput($this->getMessage('gui.custom.input'));
-                    $form->sendToPlayer($sender);
-                    return;
-                }
-                $this->addReport($sender->getName(), $this->selection[$sender->getName()], $this->getConfig()->get('reasons')[$data[0]] ?? 'None');
-                $sender->sendMessage($this->getMessage('report.successful', $this->selection[$sender->getName()], $this->getConfig()->get('reasons')[$data[0]] ?? 'None'));
-            });
-            $form->setTitle($this->getMessage('gui.title'));
-            $form->setContent($this->getMessage('gui.content', $this->selection[$sender->getName()]));
-            foreach($this->getConfig()->get('reasons') as $reason)
-            {
-                $form->addButton($reason);
-            }
-            if($this->getConfig()->get('allow-custom-reason')) $form->addButton($this->getMessage('gui.custom-reason'));
-            $form->sendToPlayer($sender);
+            $this->sendReasonSelect($sender);
         });
         $form->setTitle($this->getMessage('gui.title'));
         $form->addLabel($this->getMessage('gui.label'));
         $form->addInput($this->getMessage('gui.input'));
+        $form->sendToPlayer($sender);
+    }
+
+    private function sendReasonSelect(Player $sender)
+    {
+        $form = $this->FormAPI->createSimpleForm(function(Player $sender, array $data)
+        {
+            if($data[0] === null) return;
+            if($data[0] == count($this->getConfig()->getAll('reasons')))
+            {
+                if(!$this->getConfig()->get('allow-custom-reason')) return;
+                $form = $this->FormAPI->createCustomForm(function(Player $sender, array $data)
+                {
+                    if (count($data) < 2) return;
+                    if(!$data[1] || strlen($data[1]) < $this->getConfig()->get('custom-reason-min-length', 4) || strlen($data[1]) < $this->getConfig()->get('custom-reason-min-length', 4))
+                    {
+                        $sender->sendMessage($this->getMessage('report.bad-reason'));
+                        return;
+                    }
+                    $this->addReport($sender->getName(), $this->selection[$sender->getName()], $data[1]);
+                    $sender->sendMessage($this->getMessage('report.successful', $this->selection[$sender->getName()], $data[1]));
+                });
+                $form->setTitle($this->getMessage('gui.title'));
+                $form->addLabel($this->getMessage('gui.custom.label', $this->selection[$sender->getName()]));
+                $form->addInput($this->getMessage('gui.custom.input'));
+                $form->sendToPlayer($sender);
+                return;
+            }
+            $this->addReport($sender->getName(), $this->selection[$sender->getName()], $this->getConfig()->get('reasons')[$data[0]] ?? 'None');
+            $sender->sendMessage($this->getMessage('report.successful', $this->selection[$sender->getName()], $this->getConfig()->get('reasons')[$data[0]] ?? 'None'));
+        });
+        $form->setTitle($this->getMessage('gui.title'));
+        $form->setContent($this->getMessage('gui.content', $this->selection[$sender->getName()]));
+        foreach($this->getConfig()->get('reasons') as $reason)
+        {
+            $form->addButton($reason);
+        }
+        if($this->getConfig()->get('allow-custom-reason')) $form->addButton($this->getMessage('gui.custom-reason'));
         $form->sendToPlayer($sender);
     }
 

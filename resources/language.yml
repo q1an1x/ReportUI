@@ -1,6 +1,6 @@
 gui:
   title: "§eReport"
-  label: "Please enter the name of the player you want to report, be aware that abusing the report system will get yourself banned."
+  label: "Please enter the name of the player you want to report, be aware that abusing the report system will get yourself banned.\nYou can also use /report <Player> to report."
   input: "Player Name"
   player-not-found: "§cThis player has never showed up before."
   content: "You are now reporting §e%0§f.\nPlease select a reason to report."
