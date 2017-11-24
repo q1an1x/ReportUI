@@ -115,16 +115,6 @@ class ReportGUI extends PluginBase implements Listener
         $form = $this->FormAPI->createCustomForm(function(Player $sender, array $data)
         {
             if(count($data) < 2) return;
-            if(!$data[1] || !$this->getServer()->getOfflinePlayer($data[1])->getFirstPlayed())
-            {
-                $sender->sendMessage($this->getMessage('gui.player-not-found'));
-                return;
-            }
-            if(strtolower($data[1]) == strtolower($sender->getName()))
-            {
-                $sender->sendMessage($this->getMessage('gui.cant-report-self'));
-                return;
-            }
             $this->selection[$sender->getName()] = $data[1];
             $this->sendReasonSelect($sender);
         });
@@ -136,6 +126,17 @@ class ReportGUI extends PluginBase implements Listener
 
     private function sendReasonSelect(Player $sender)
     {
+        $name = $this->selection[$sender->getName()];
+        if(!$name || !$this->getServer()->getOfflinePlayer($name)->getFirstPlayed())
+        {
+            $sender->sendMessage($this->getMessage('gui.player-not-found'));
+            return;
+        }
+        if(strtolower($name) == strtolower($sender->getName()))
+        {
+            $sender->sendMessage($this->getMessage('gui.cant-report-self'));
+            return;
+        }
         $form = $this->FormAPI->createSimpleForm(function(Player $sender, array $data)
         {
             if($data[0] === null) return;
