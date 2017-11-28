@@ -137,6 +137,11 @@ class ReportGUI extends PluginBase implements Listener
             $sender->sendMessage($this->getMessage('gui.cant-report-self'));
             return;
         }
+        if($this->getServer()->getOfflinePlayer($this->selection[$sender->getName()])->isOp() && !$this->getConfig()->get('allow-reporting-ops'))
+        {
+            $sender->sendMessage($this->getMessage('report.op'));
+            return;
+        }
         $form = $this->FormAPI->createSimpleForm(function(Player $sender, array $data)
         {
             if($data[0] === null) return;

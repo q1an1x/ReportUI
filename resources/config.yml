@@ -12,3 +12,5 @@ allow-custom-reason: true
 custom-reason-min-length: 4
 
 custom-reason-max-length: 20
+
+allow-reporting-ops: false
