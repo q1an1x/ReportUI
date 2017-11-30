@@ -142,6 +142,11 @@ class ReportGUI extends PluginBase implements Listener
             $sender->sendMessage($this->getMessage('report.op'));
             return;
         }
+        if($this->getServer()->getOfflinePlayer($this->selection[$sender->getName()])->isBanned() && !$this->getConfig()->get('allow-reporting-banned-players'))
+        {
+            $sender->sendMessage($this->getMessage('report.banned'));
+            return;
+        }
         $form = $this->FormAPI->createSimpleForm(function(Player $sender, array $data)
         {
             if($data[0] === null) return;

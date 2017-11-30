@@ -13,6 +13,7 @@ report:
   successful: "§eYour report has been submitted. §7(Reported Player: %0, Reason: %1)"
   bad-reason: "§cYour reason was too long or too short."
   op: "§cYou don't have permission to report this player."
+  banned: "§eThis player has already been banned!"
 admin:
   name-not-entered: "§cPlease enter player's name!"
   deleted-by-reporter: "§aAll %0's reports have been deleted."
