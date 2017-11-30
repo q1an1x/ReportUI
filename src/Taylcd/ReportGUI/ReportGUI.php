@@ -150,7 +150,7 @@ class ReportGUI extends PluginBase implements Listener
         $form = $this->FormAPI->createSimpleForm(function(Player $sender, array $data)
         {
             if($data[0] === null) return;
-            if($data[0] == count($this->getConfig()->getAll('reasons')))
+            if($data[0] == count($this->getConfig()->get('reasons')))
             {
                 if(!$this->getConfig()->get('allow-custom-reason')) return;
                 $form = $this->FormAPI->createCustomForm(function(Player $sender, array $data)
