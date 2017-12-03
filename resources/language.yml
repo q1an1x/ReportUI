@@ -15,6 +15,9 @@ report:
   op: "§cYou don't have permission to report this player."
   banned: "§eThis player has already been banned!"
 admin:
+  main-content: "Welcome, administrator!\nPlease select an operation."
+  delete-by-reporter-content: "Please enter a name, all reports submitted by this player will be deleted."
+  delete-by-target-content: "Please enter a name, all reports related to this player will be deleted."
   name-not-entered: "§cPlease enter player's name!"
   deleted-by-reporter: "§aAll %0's reports have been deleted."
   deleted-by-target: "§aAll reports related to %0 have been deleted."
@@ -30,4 +33,7 @@ admin:
     delete-all: "Delete all related reports"
     ban: "§cBan & delete all related reports"
     back: "Go back"
+    view-reports: "View reports"
+    delete-by-reporter: "Delete reports by reporter"
+    delete-by-target: "Delete reports by reported"
   unread-reports: "§eThere are §f%0§e new reports."

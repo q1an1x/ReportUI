@@ -187,58 +187,104 @@ class ReportGUI extends PluginBase implements Listener
     {
         $form = $this->FormAPI->createSimpleForm(function(Player $sender, array $data)
         {
-            if($data[0] === null || count($this->reports->getAll()) < 1) return;
-            $this->admin_selection[$sender->getName()] = $data[0];
-            $form = $this->FormAPI->createSimpleForm(function(Player $sender, array $data)
+            if($data[0] === null) return;
+            switch($data[0])
             {
-                if($data[0] === null) return;
-                $report = $this->reports->get($this->admin_selection[$sender->getName()]);
-                switch($data[0])
-                {
-                    case 0:
-                        $this->deleteReport($this->admin_selection[$sender->getName()]);
-                        $sender->sendMessage($this->getMessage('admin.deleted'));
-                        return;
-                    case 1:
-                        $this->deleteReportByTarget($report['target']);
-                        $sender->sendMessage($this->getMessage('admin.deleted-by-target', $report['target']));
-                        return;
-                    case 2:
-                        if(($player = $this->getServer()->getOfflinePlayer($report['target'])) !== null) $player->setBanned(true);
-                        $this->deleteReportByTarget($report['target']);
-                        $sender->sendMessage($this->getMessage('admin.banned', $report['target']));
-                        return;
-                    case 3:
-                        $this->sendAdminGUI($sender);
-                        return;
-                }
-            });
-            $report = $this->reports->get($this->admin_selection[$sender->getName()]);
-            $form->setTitle($this->getMessage('admin.title'));
-            $count = 0;
-            foreach($this->reports->getAll() as $_report)
-            {
-                if(strtolower($_report['target']) == strtolower($report['target'])) $count ++;
+                case 0:
+                    $form = $this->FormAPI->createSimpleForm(function(Player $sender, array $data)
+                    {
+                        if($data[0] === null || count($this->reports->getAll()) < 1) return;
+                        $this->admin_selection[$sender->getName()] = $data[0];
+                        $form = $this->FormAPI->createSimpleForm(function(Player $sender, array $data)
+                        {
+                            if($data[0] === null) return;
+                            $report = $this->reports->get($this->admin_selection[$sender->getName()]);
+                            switch($data[0])
+                            {
+                                case 0:
+                                    $this->deleteReport($this->admin_selection[$sender->getName()]);
+                                    $sender->sendMessage($this->getMessage('admin.deleted'));
+                                    return;
+                                case 1:
+                                    $this->deleteReportByTarget($report['target']);
+                                    $sender->sendMessage($this->getMessage('admin.deleted-by-target', $report['target']));
+                                    return;
+                                case 2:
+                                    if(($player = $this->getServer()->getOfflinePlayer($report['target'])) !== null) $player->setBanned(true);
+                                    $this->deleteReportByTarget($report['target']);
+                                    $sender->sendMessage($this->getMessage('admin.banned', $report['target']));
+                                    return;
+                                case 3:
+                                    $this->sendAdminGUI($sender);
+                                    return;
+                            }
+                        });
+                        $report = $this->reports->get($this->admin_selection[$sender->getName()]);
+                        $form->setTitle($this->getMessage('admin.title'));
+                        $count = 0;
+                        foreach($this->reports->getAll() as $_report)
+                        {
+                            if(strtolower($_report['target']) == strtolower($report['target'])) $count ++;
+                        }
+                        $form->setContent($this->getMessage('admin.detail', $report['target'], $report['reporter'], date("Y-m-d h:i", $report['time']), $report['reason'], $count));
+                        $form->addButton($this->getMessage('admin.button.delete'));
+                        $form->addButton($this->getMessage('admin.button.delete-all'));
+                        $form->addButton($this->getMessage('admin.button.ban'));
+                        $form->addButton($this->getMessage('admin.button.back'));
+                        $form->sendToPlayer($sender);
+                    });
+                    $form->setTitle($this->getMessage('admin.title'));
+                    $form->setContent($this->getMessage('admin.content'));
+                    $foo = false;
+                    foreach($this->reports->getAll() as $report)
+                    {
+                        $foo = true;
+                        $form->addButton($this->getMessage('admin.button.report', $report['target'], date("Y-m-d h:i", $report['time'])));
+                    }
+                    if(!$foo)
+                    {
+                        $form->addButton($this->getMessage('admin.no-report'));
+                    }
+                    $form->sendToPlayer($sender);
+                    break;
+                case 1:
+                    $form = $this->FormAPI->createCustomForm(function(Player $sender, array $data)
+                    {
+                        if(count($data) < 2) return;
+                        if(!$data[1] || !$this->getServer()->getOfflinePlayer($data[1])->getFirstPlayed())
+                        {
+                            $sender->sendMessage($this->getMessage('gui.player-not-found'));
+                            return;
+                        }
+                        $this->deleteReportByReporter($data[1]);
+                        $sender->sendMessage($this->getMessage('admin.deleted-by-reporter', $data[1]));
+                    });
+                    $form->addLabel($this->getMessage('admin.delete-by-reporter-content'));
+                    $form->addInput($this->getMessage('gui.input'));
+                    $form->sendToPlayer($sender);
+                    break;
+                case 2:
+                    $form = $this->FormAPI->createCustomForm(function(Player $sender, array $data)
+                    {
+                        if(count($data) < 2) return;
+                        if(!$data[1] || !$this->getServer()->getOfflinePlayer($data[1])->getFirstPlayed())
+                        {
+                            $sender->sendMessage($this->getMessage('gui.player-not-found'));
+                            return;
+                        }
+                        $this->deleteReportByTarget($data[1]);
+                        $sender->sendMessage($this->getMessage('admin.deleted-by-target', $data[1]));
+                    });
+                    $form->addLabel($this->getMessage('admin.delete-by-target-content'));
+                    $form->addInput($this->getMessage('gui.input'));
+                    $form->sendToPlayer($sender);
+                    break;
             }
-            $form->setContent($this->getMessage('admin.detail', $report['target'], $report['reporter'], date("Y-m-d h:i", $report['time']), $report['reason'], $count));
-            $form->addButton($this->getMessage('admin.button.delete'));
-            $form->addButton($this->getMessage('admin.button.delete-all'));
-            $form->addButton($this->getMessage('admin.button.ban'));
-            $form->addButton($this->getMessage('admin.button.back'));
-            $form->sendToPlayer($sender);
         });
-        $form->setTitle($this->getMessage('admin.title'));
-        $form->setContent($this->getMessage('admin.content'));
-        $foo = false;
-        foreach($this->reports->getAll() as $report)
-        {
-            $foo = true;
-            $form->addButton($this->getMessage('admin.button.report', $report['target'], date("Y-m-d h:i", $report['time'])));
-        }
-        if(!$foo)
-        {
-            $form->addButton($this->getMessage('admin.no-report'));
-        }
+        $form->setContent($this->getMessage('admin.main-content'));
+        $form->addButton($this->getMessage('admin.button.view-reports'));
+        $form->addButton($this->getMessage('admin.button.delete-by-reporter'));
+        $form->addButton($this->getMessage('admin.button.delete-by-target'));
         $form->sendToPlayer($sender);
     }
 
