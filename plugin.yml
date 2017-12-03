@@ -1,7 +1,7 @@
 name: ReportGUI
 author: Taylcd
 
-version: 1.1.2
+version: 1.2.0
 api:
   - 3.0.0-ALPHA7
   - 3.0.0-ALPHA8
