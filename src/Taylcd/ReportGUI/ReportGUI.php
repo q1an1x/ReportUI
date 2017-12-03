@@ -80,26 +80,6 @@ class ReportGUI extends PluginBase implements Listener
                 $this->sendReportGUI($sender);
                 return true;
             case 'reportadmin':
-                if(isset($args[0]) && ($args[0] == 'deletebyreporter' || $args[0] == 'dbr'))
-                {
-                    if(!isset($args[1]))
-                    {
-                        $sender->sendMessage($this->getMessage('admin.name-not-entered'));
-                    }
-                    $this->deleteReportByReporter($args[1]);
-                    $sender->sendMessage($this->getMessage('admin.deleted-by-reporter'), $args[1]);
-                    return true;
-                }
-                if(isset($args[0]) && ($args[0] == 'deletebytarget' || $args[0] == 'dbt'))
-                {
-                    if(!isset($args[1]))
-                    {
-                        $sender->sendMessage($this->getMessage('admin.name-not-entered'));
-                    }
-                    $this->deleteReportByTarget($args[1]);
-                    $sender->sendMessage($this->getMessage('admin.deleted-by-target'), $args[1]);
-                    return true;
-                }
                 $this->sendAdminGUI($sender);
         }
         return true;
