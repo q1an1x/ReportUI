@@ -9,8 +9,6 @@ Download compilied plugins here: https://github.com/Taylcd/ReportGUI/releases
 - /report - Open Report GUI
 - /report [Player] - Report a player
 - /reportadmin - Open Admin GUI
-- /reportadmin deletebyreporter/dbr [Player] - Delete all the reports reported by specified player.
-- /reportadmin deletebytarget/dbt [Player] - Delete all the reports related to specified player.
 
 ## Configuration
 You can edit default reasons in config.yml.
