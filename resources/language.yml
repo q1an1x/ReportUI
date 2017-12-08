@@ -25,9 +25,10 @@ admin:
   banned: "§ePlayer %0 has been banned and all related reports has been deleted."
   title: "§eReport Manager"
   content: "Welcome, administrator!\nPlease select a report to see the details."
-  no-report: "No report."
+  no-report: "\nThere's currently no report to be viewed."
   detail: "Player §e%0§f was reported by %1 at %2 for §e%3§f.\nThis player has been reported §e%4§f times on record.\n"
   button:
+    close: "Close"
     report: "%0 reported at %1"
     delete: "Delete this report"
     delete-all: "Delete all related reports"

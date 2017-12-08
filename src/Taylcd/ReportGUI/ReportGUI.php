@@ -223,7 +223,8 @@ class ReportGUI extends PluginBase implements Listener
                     }
                     if(!$foo)
                     {
-                        $form->addButton($this->getMessage('admin.no-report'));
+                        $form->setContent($form->getContent() . $this->getMessage('admin.no-report'));
+                        $form->addButton($this->getMessage('admin.button.close'));
                     }
                     $form->sendToPlayer($sender);
                     break;
