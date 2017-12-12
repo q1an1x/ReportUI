@@ -1,4 +1,4 @@
-name: ReportGUI
+name: ReportUI
 author: Taylcd
 
 version: 1.2.1
@@ -8,7 +8,7 @@ api:
   - 3.0.0-ALPHA9
   - 3.0.0-ALPHA10
 
-main: Taylcd\ReportGUI\ReportGUI
+main: Taylcd\ReportUI\ReportUI
 depend: ["FormAPI"]
 
 commands:

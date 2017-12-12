@@ -1,6 +1,6 @@
 <?php
 
-namespace Taylcd\ReportGUI;
+namespace Taylcd\ReportUI;
 
 use jojoe77777\FormAPI\FormAPI;
 use pocketmine\command\Command;
@@ -12,7 +12,7 @@ use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
 
-class ReportGUI extends PluginBase implements Listener
+class ReportUI extends PluginBase implements Listener
 {
     /** @var Config */
     protected $lang;
@@ -45,7 +45,7 @@ class ReportGUI extends PluginBase implements Listener
         }
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
         $this->getServer()->getScheduler()->scheduleDelayedRepeatingTask(new SaveTask($this), $this->getConfig()->get('save-period', 600) * 20, $this->getConfig()->get('save-period', 600) * 20);
-        $this->getServer()->getLogger()->info(TextFormat::AQUA . 'ReportGUI enabled. ' . TextFormat::GRAY . 'Made by Taylcd with ' . TextFormat::RED . "\xe2\x9d\xa4");
+        $this->getServer()->getLogger()->info(TextFormat::AQUA . 'ReportUI enabled. ' . TextFormat::GRAY . 'Made by Taylcd with ' . TextFormat::RED . "\xe2\x9d\xa4");
     }
 
     public function onDisable()

@@ -1,6 +1,6 @@
 <?php
 
-namespace Taylcd\ReportGUI;
+namespace Taylcd\ReportUI;
 
 use pocketmine\scheduler\PluginTask;
 
