@@ -1,9 +1,9 @@
-# ReportGUI
-A report plugin with GUI.
+# ReportUI
+A plugin allows players to report harmful behaviors, with a beautiful(?) User-Interface.
 
 This plugin requires FormAPI(https://github.com/jojoe77777/FormAPI) to run.
 
-Download compilied plugins here: https://github.com/Taylcd/ReportGUI/releases
+Download compilied plugins here: https://github.com/Taylcd/ReportUI/releases
 
 ## Commands
 - /report - Open Report GUI
