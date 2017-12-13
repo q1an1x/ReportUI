@@ -181,7 +181,7 @@ class ReportUI extends PluginBase implements Listener
                             switch($data[0])
                             {
                                 case 0:
-                                    $this->deleteReport($this->admin_selection[$sender->getName()]);
+                                    $this->deleteReport("id", $this->admin_selection[$sender->getName()]);
                                     $sender->sendMessage($this->getMessage('admin.deleted'));
                                     return;
                                 case 1:
@@ -236,7 +236,7 @@ class ReportUI extends PluginBase implements Listener
                             $sender->sendMessage($this->getMessage('gui.player-not-found'));
                             return;
                         }
-                        $this->deleteReportByReporter("reporter", $data[1]);
+                        $this->deleteReport("reporter", $data[1]);
                         $sender->sendMessage($this->getMessage('admin.deleted-by-reporter', $data[1]));
                     });
                     $form->addLabel($this->getMessage('admin.delete-by-reporter-content'));
