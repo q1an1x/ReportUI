@@ -27,12 +27,11 @@ class ReportUI extends PluginBase implements Listener
 
     public function onLoad()
     {
-        $folder = $this->getDataFolder();
         $this->saveDefaultConfig();
         $this->saveResource('language.yml');
 
-        $this->lang = new Config($folder . 'language.yml', Config::YAML);
-        $this->reports = new Config($folder . 'reports.yml', Config::YAML);
+        $this->lang = new Config($this->getDataFolder() . 'language.yml', Config::YAML);
+        $this->reports = new Config($this->getDataFolder() . 'reports.yml', Config::YAML);
     }
 
     public function onEnable()
@@ -186,12 +185,12 @@ class ReportUI extends PluginBase implements Listener
                                     $sender->sendMessage($this->getMessage('admin.deleted'));
                                     return;
                                 case 1:
-                                    $this->deleteReportByTarget($report['target']);
+                                    $this->deleteReport("target", $report['target']);
                                     $sender->sendMessage($this->getMessage('admin.deleted-by-target', $report['target']));
                                     return;
                                 case 2:
                                     if(($player = $this->getServer()->getOfflinePlayer($report['target'])) !== null) $player->setBanned(true);
-                                    $this->deleteReportByTarget($report['target']);
+                                    $this->deleteReport("target", $report['target']);
                                     $sender->sendMessage($this->getMessage('admin.banned', $report['target']));
                                     return;
                                 case 3:
@@ -237,7 +236,7 @@ class ReportUI extends PluginBase implements Listener
                             $sender->sendMessage($this->getMessage('gui.player-not-found'));
                             return;
                         }
-                        $this->deleteReportByReporter($data[1]);
+                        $this->deleteReportByReporter("reporter", $data[1]);
                         $sender->sendMessage($this->getMessage('admin.deleted-by-reporter', $data[1]));
                     });
                     $form->addLabel($this->getMessage('admin.delete-by-reporter-content'));
@@ -253,7 +252,7 @@ class ReportUI extends PluginBase implements Listener
                             $sender->sendMessage($this->getMessage('gui.player-not-found'));
                             return;
                         }
-                        $this->deleteReportByTarget($data[1]);
+                        $this->deleteReport("target", $data[1]);
                         $sender->sendMessage($this->getMessage('admin.deleted-by-target', $data[1]));
                     });
                     $form->addLabel($this->getMessage('admin.delete-by-target-content'));
@@ -281,34 +280,36 @@ class ReportUI extends PluginBase implements Listener
         $this->reports->save();
     }
 
-    private function deleteReport(int $id)
+    private function deleteReport(string $search, $value)
     {
-        $reports = $this->reports->getAll();
-        array_splice($reports, $id, 1);
-        $this->reports->setAll($reports);
+        if($search == "id"){
+            $reports = $this->reports->getAll();
+            array_splice($reports, $value, 1);
+            $this->reports->setAll($reports);
+        }else{
+            $reports = $this->reports->getAll();
+            for($i = 0; $i < count($reports); $i ++)
+                if(strtolower($reports[$i][$search]) == strtolower($value)){
+                    array_splice($reports, $i, 1);
+                    $i --;
+                }
+            $this->reports->setAll($reports);
+        }
     }
 
+    /**
+     * @deprecated
+     */
     private function deleteReportByTarget(string $name)
     {
-        $reports = $this->reports->getAll();
-        for($i = 0; $i < count($reports); $i ++)
-            if(strtolower($reports[$i]['target']) == strtolower($name))
-            {
-                array_splice($reports, $i, 1);
-                $i --;
-            }
-        $this->reports->setAll($reports);
+        $this->deleteReport("target", $name);
     }
 
+    /**
+     * @deprecated
+     */
     private function deleteReportByReporter(string $name)
     {
-        $reports = $this->reports->getAll();
-        for($i = 0; $i < count($reports); $i ++)
-            if(strtolower($reports[$i]['reporter']) == strtolower($name))
-            {
-                array_splice($reports, $i, 1);
-                $i --;
-            }
-        $this->reports->setAll($reports);
+        $this->deleteReport("reporter", $name);
     }
 }
