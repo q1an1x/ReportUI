@@ -72,8 +72,17 @@ class ReportUI extends PluginBase implements Listener
 
     public function getMessage($key, ...$replacement): string
     {
-        $message = $this->lang->getNested($key, 'Missing message: ' . $key);
-        foreach($replacement as $index => $value) $message = str_replace("%$index", $value, $message);
+        if(!$message = $this->lang->getNested($key)){
+            if($message = (new Config($this->getFile() . "resources/language.yml", Config::YAML))->getNested($key)){
+                $this->lang->setNested($key, $message);
+                $this->lang->save();
+            } else {
+                $this->getLogger()->warning("Message $key not found.");
+            }
+        }
+        foreach($replacement as $index => $value){
+            $message = str_replace("%$index", $value, $message);
+        }
         return $message;
     }
 
