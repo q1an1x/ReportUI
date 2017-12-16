@@ -16,3 +16,6 @@ custom-reason-max-length: 20
 allow-reporting-ops: false
 
 allow-reporting-banned-players: false
+
+# Plugin will check for new version from Github
+check-update: true

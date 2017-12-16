@@ -9,6 +9,7 @@ use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
+use pocketmine\plugin\PluginDescription;
 use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
 
@@ -29,9 +30,17 @@ class ReportUI extends PluginBase implements Listener
     {
         $this->saveDefaultConfig();
         $this->saveResource('language.yml');
-
         $this->lang = new Config($this->getDataFolder() . 'language.yml', Config::YAML);
         $this->reports = new Config($this->getDataFolder() . 'reports.yml', Config::YAML);
+
+        if($this->getConfig()->get("check-update", true)){
+            $this->getLogger()->info("Checking update...");
+            if(($version = (new PluginDescription(file_get_contents("https://github.com/Taylcd/ReportUI/raw/master/plugin.yml")))->getVersion()) != $this->getDescription()->getVersion()){
+                $this->getLogger()->notice("New version $version available! Get it here: " . $this->getDescription()->getWebsite());
+            } else {
+                $this->getLogger()->info("Already up-to-date.");
+            }
+        }
     }
 
     public function onEnable()
