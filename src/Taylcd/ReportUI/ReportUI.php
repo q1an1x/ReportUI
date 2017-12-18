@@ -318,20 +318,4 @@ class ReportUI extends PluginBase implements Listener
             $this->reports->setAll($reports);
         }
     }
-
-    /**
-     * @deprecated
-     */
-    private function deleteReportByTarget(string $name)
-    {
-        $this->deleteReport("target", $name);
-    }
-
-    /**
-     * @deprecated
-     */
-    private function deleteReportByReporter(string $name)
-    {
-        $this->deleteReport("reporter", $name);
-    }
 }
