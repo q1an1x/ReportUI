@@ -12,6 +12,7 @@ use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginDescription;
 use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
+use Taylcd\ReportUI\task\SaveTask;
 
 class ReportUI extends PluginBase implements Listener
 {
