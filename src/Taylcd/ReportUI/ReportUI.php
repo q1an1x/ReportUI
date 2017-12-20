@@ -12,6 +12,7 @@ use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginDescription;
 use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
+use Taylcd\ReportUI\event\PlayerReportEvent;
 use Taylcd\ReportUI\task\SaveTask;
 
 class ReportUI extends PluginBase implements Listener
@@ -172,8 +173,11 @@ class ReportUI extends PluginBase implements Listener
                 $form->sendToPlayer($sender);
                 return;
             }
-            $this->addReport($sender->getName(), $this->selection[$sender->getName()], $this->getConfig()->get('reasons')[$data[0]] ?? 'None');
-            $sender->sendMessage($this->getMessage('report.successful', $this->selection[$sender->getName()], $this->getConfig()->get('reasons')[$data[0]] ?? 'None'));
+            $this->getServer()->getPluginManager()->callEvent($ev = new PlayerReportEvent($sender, $this->selection[$sender->getName()], $this->getConfig()->get('reasons')[$data[0]] ?? 'None'));
+            if(!$ev->isCancelled()){
+                $this->addReport($sender->getName(), $this->selection[$sender->getName()], $this->getConfig()->get('reasons')[$data[0]] ?? 'None');
+                $sender->sendMessage($this->getMessage('report.successful', $this->selection[$sender->getName()], $this->getConfig()->get('reasons')[$data[0]] ?? 'None'));
+            }
         });
         $form->setTitle($this->getMessage('gui.title'));
         $form->setContent($this->getMessage('gui.content', $this->selection[$sender->getName()]));
