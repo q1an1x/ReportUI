@@ -13,6 +13,7 @@ use pocketmine\plugin\PluginDescription;
 use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
 use Taylcd\ReportUI\event\PlayerReportEvent;
+use Taylcd\ReportUI\event\ReportProcessedEvent;
 use Taylcd\ReportUI\task\SaveTask;
 
 class ReportUI extends PluginBase implements Listener
@@ -208,17 +209,26 @@ class ReportUI extends PluginBase implements Listener
                             switch($data[0])
                             {
                                 case 0:
-                                    $this->deleteReport("id", $this->admin_selection[$sender->getName()]);
-                                    $sender->sendMessage($this->getMessage('admin.deleted'));
+                                    $this->getServer()->getPluginManager()->callEvent($ev = new ReportProcessedEvent($report['target'], $report['reason'], ReportProcessedEvent::PROCESS_TYPE_DELETE));
+                                    if(!$ev->isCancelled()){
+                                        $this->deleteReport("id", $this->admin_selection[$sender->getName()]);
+                                        $sender->sendMessage($this->getMessage('admin.deleted'));
+                                    }
                                     return;
                                 case 1:
-                                    $this->deleteReport("target", $report['target']);
-                                    $sender->sendMessage($this->getMessage('admin.deleted-by-target', $report['target']));
+                                    $this->getServer()->getPluginManager()->callEvent($ev = new ReportProcessedEvent($report['target'], $report['reason'], ReportProcessedEvent::PROCESS_TYPE_DELETE_ALL));
+                                    if(!$ev->isCancelled()){
+                                        $this->deleteReport("target", $report['target']);
+                                        $sender->sendMessage($this->getMessage('admin.deleted-by-target', $report['target']));
+                                    }
                                     return;
                                 case 2:
-                                    if(($player = $this->getServer()->getOfflinePlayer($report['target'])) !== null) $player->setBanned(true);
-                                    $this->deleteReport("target", $report['target']);
-                                    $sender->sendMessage($this->getMessage('admin.banned', $report['target']));
+                                    $this->getServer()->getPluginManager()->callEvent($ev = new ReportProcessedEvent($report['target'], $report['reason'], ReportProcessedEvent::PROCESS_TYPE_BAN));
+                                    if(!$ev->isCancelled()){
+                                        if(($player = $this->getServer()->getOfflinePlayer($report['target'])) !== null) $player->setBanned(true);
+                                        $this->deleteReport("target", $report['target']);
+                                        $sender->sendMessage($this->getMessage('admin.banned', $report['target']));
+                                    }
                                     return;
                                 case 3:
                                     $this->sendAdminGUI($sender);
