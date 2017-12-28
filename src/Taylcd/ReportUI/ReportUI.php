@@ -70,7 +70,11 @@ class ReportUI extends PluginBase implements Listener
 
     public function onPlayerJoin(PlayerJoinEvent $event)
     {
-        if($event->getPlayer()->isOp()) if($count = count($this->reports->getAll())) $event->getPlayer()->sendMessage($this->getMessage('admin.unread-reports', $count));
+        if($event->getPlayer()->hasPermission("report.admin.notification")){
+            if($count = count($this->reports->getAll())){
+                $event->getPlayer()->sendMessage($this->getMessage('admin.unread-reports', $count));
+            }
+        }
     }
 
     public function getMessage($key, ...$replacement): string

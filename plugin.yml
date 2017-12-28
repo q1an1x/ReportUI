@@ -25,3 +25,5 @@ permissions:
     default: true
   report.admin:
     default: op
+  report.admin.notification:
+    default: op
