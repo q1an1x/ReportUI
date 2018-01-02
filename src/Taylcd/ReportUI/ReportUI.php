@@ -68,15 +68,6 @@ class ReportUI extends PluginBase implements Listener
         $this->save();
     }
 
-    public function onPlayerJoin(PlayerJoinEvent $event)
-    {
-        if($event->getPlayer()->hasPermission("report.admin.notification")){
-            if($count = count($this->reports->getAll())){
-                $event->getPlayer()->sendMessage($this->getMessage('admin.unread-reports', $count));
-            }
-        }
-    }
-
     public function getMessage($key, ...$replacement): string
     {
         if(!$message = $this->lang->getNested($key)){
@@ -309,20 +300,17 @@ class ReportUI extends PluginBase implements Listener
         $form->sendToPlayer($sender);
     }
 
-    private function addReport(string $reporter, string $target, string $reason)
-    {
+    public function save(){
+        $this->reports->save();
+    }
+
+    public function addReport(string $reporter, string $target, string $reason){
         $reports = $this->reports->getAll();
         array_unshift($reports, ['reporter'=>$reporter, 'target'=>$target, 'reason'=>$reason, 'time' => time()]);
         $this->reports->setAll($reports);
     }
 
-    public function save()
-    {
-        $this->reports->save();
-    }
-
-    private function deleteReport(string $search, $value)
-    {
+    public function deleteReport(string $search, $value){
         if($search == "id"){
             $reports = $this->reports->getAll();
             array_splice($reports, $value, 1);
@@ -336,5 +324,9 @@ class ReportUI extends PluginBase implements Listener
                 }
             $this->reports->setAll($reports);
         }
+    }
+
+    public function getReports(){
+        return $this->reports;
     }
 }
