@@ -5,18 +5,17 @@ namespace Taylcd\ReportUI;
 use jojoe77777\FormAPI\FormAPI;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\event\Listener;
-use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginDescription;
 use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
+use Taylcd\ReportUI\event\Listener;
 use Taylcd\ReportUI\event\PlayerReportEvent;
 use Taylcd\ReportUI\event\ReportProcessedEvent;
 use Taylcd\ReportUI\task\SaveTask;
 
-class ReportUI extends PluginBase implements Listener
+class ReportUI extends PluginBase
 {
     /** @var Config */
     protected $lang;
@@ -58,7 +57,7 @@ class ReportUI extends PluginBase implements Listener
             $this->getLogger()->warning('Dependency FormAPI not found, disabling...');
             $this->getPluginLoader()->disablePlugin($this);
         }
-        $this->getServer()->getPluginManager()->registerEvents($this, $this);
+        $this->getServer()->getPluginManager()->registerEvents(new Listener($this), $this);
         $this->getServer()->getScheduler()->scheduleDelayedRepeatingTask(new SaveTask($this), $this->getConfig()->get('save-period', 600) * 20, $this->getConfig()->get('save-period', 600) * 20);
         $this->getServer()->getLogger()->info(TextFormat::AQUA . 'ReportUI enabled. ' . TextFormat::GRAY . 'Made by Taylcd with ' . TextFormat::RED . "\xe2\x9d\xa4");
     }
@@ -320,6 +319,7 @@ class ReportUI extends PluginBase implements Listener
             for($i = 0; $i < count($reports); $i ++)
                 if(strtolower($reports[$i][$search]) == strtolower($value)){
                     array_splice($reports, $i, 1);
+
                     $i --;
                 }
             $this->reports->setAll($reports);
