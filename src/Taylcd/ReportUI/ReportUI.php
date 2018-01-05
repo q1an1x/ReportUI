@@ -26,10 +26,10 @@ class ReportUI extends PluginBase
     /** @var FormAPI */
     protected $FormAPI;
 
-    private $selection = [], $admin_selection = [];
+    private $reportCache = [];
+    private $adminCache = [];
 
-    public function onLoad()
-    {
+    public function onLoad(){
         $this->saveDefaultConfig();
         $this->saveResource('language.yml');
         $this->lang = new Config($this->getDataFolder() . 'language.yml', Config::YAML);
@@ -49,11 +49,9 @@ class ReportUI extends PluginBase
         }
     }
 
-    public function onEnable()
-    {
+    public function onEnable(){
         $this->FormAPI = $this->getServer()->getPluginManager()->getPlugin("FormAPI");
-        if(!$this->FormAPI or $this->FormAPI->isDisabled())
-        {
+        if(!$this->FormAPI or $this->FormAPI->isDisabled()){
             $this->getLogger()->warning('Dependency FormAPI not found, disabling...');
             $this->getPluginLoader()->disablePlugin($this);
         }
@@ -62,18 +60,70 @@ class ReportUI extends PluginBase
         $this->getServer()->getLogger()->info(TextFormat::AQUA . 'ReportUI enabled. ' . TextFormat::GRAY . 'Made by Taylcd with ' . TextFormat::RED . "\xe2\x9d\xa4");
     }
 
-    public function onDisable()
-    {
+    public function onDisable(){
         $this->save();
     }
 
-    public function getMessage($key, ...$replacement): string
-    {
+    public function save(){
+        $this->reports->save();
+    }
+
+    /**
+     * Create a new report
+     *
+     * @param string $reporter
+     * @param string $target
+     * @param string $reason
+     */
+    public function addReport(string $reporter, string $target, string $reason){
+        $reports = $this->reports->getAll();
+        array_unshift($reports, [
+            'reporter'=>$reporter,
+            'target'=>$target,
+            'reason'=>$reason,
+            'time' => time()
+        ]);
+        $this->reports->setAll($reports);
+    }
+
+    /**
+     * Delete specific report
+     *
+     * @param string $search
+     * @param $value
+     */
+    public function deleteReport(string $search, $value){
+        if($search == "id"){
+            $reports = $this->reports->getAll();
+            array_splice($reports, $value, 1);
+            $this->reports->setAll($reports);
+        }else{
+            $reports = $this->reports->getAll();
+            for($i = 0; $i < count($reports); $i ++){
+                if(strtolower($reports[$i][$search]) == strtolower($value)){
+                    $i --;
+                    array_splice($reports, $i, 1);
+                }
+            }
+            $this->reports->setAll($reports);
+        }
+    }
+
+    /**
+     * Get all reports on the server
+     *
+     * @return Config
+     */
+    public function getReports(){
+        return $this->reports;
+    }
+
+    public function getMessage($key, ...$replacement) : string{
         if(!$message = $this->lang->getNested($key)){
             if($message = (new Config($this->getFile() . "resources/language.yml", Config::YAML))->getNested($key)){
                 $this->lang->setNested($key, $message);
                 $this->lang->save();
-            } else {
+            }else{
                 $this->getLogger()->warning("Message $key not found.");
             }
         }
@@ -83,18 +133,15 @@ class ReportUI extends PluginBase
         return $message;
     }
 
-    public function onCommand(CommandSender $sender, Command $command, string $label, array $args): bool
-    {
-        if(!$sender instanceof Player)
-        {
+    public function onCommand(CommandSender $sender, Command $command, string $label, array $args) : bool{
+        if(!$sender instanceof Player){
             $sender->sendMessage(TextFormat::RED . 'This command can only be called in-game.');
             return true;
         }
-        switch($command->getName())
-        {
+        switch($command->getName()){
             case 'report':
-                if(!isset($args[0])) unset($this->selection[$sender->getName()]);
-                else $this->selection[$sender->getName()] = $args[0];
+                if(!isset($args[0])) unset($this->reportCache[$sender->getName()]);
+                else $this->reportCache[$sender->getName()] = $args[0];
                 $this->sendReportGUI($sender);
                 return true;
             case 'reportadmin':
@@ -103,109 +150,109 @@ class ReportUI extends PluginBase
         return true;
     }
 
-    private function sendReportGUI(Player $sender)
-    {
-        if(isset($this->selection[$sender->getName()]))
-        {
+    private function sendReportGUI(Player $sender){
+        if(isset($this->reportCache[$sender->getName()])){
             $this->sendReasonSelect($sender);
             return;
         }
-        $form = $this->FormAPI->createCustomForm(function(Player $sender, array $data)
-        {
-            if(count($data) < 2) return;
-            $this->selection[$sender->getName()] = $data[1];
+
+        $form = $this->FormAPI->createCustomForm(function(Player $sender, array $data){
+            if(count($data) < 2){
+                return;
+            }
+            $this->reportCache[$sender->getName()] = $data[1];
             $this->sendReasonSelect($sender);
         });
+
         $form->setTitle($this->getMessage('gui.title'));
         $form->addLabel($this->getMessage('gui.label'));
         $form->addInput($this->getMessage('gui.input'));
         $form->sendToPlayer($sender);
     }
 
-    private function sendReasonSelect(Player $sender)
-    {
-        $name = $this->selection[$sender->getName()];
-        if(!$name || !$this->getServer()->getOfflinePlayer($name)->getFirstPlayed())
-        {
+    private function sendReasonSelect(Player $sender){
+        $name = $this->reportCache[$sender->getName()];
+        if(!$name || !$this->getServer()->getOfflinePlayer($name)->getFirstPlayed()){
             $sender->sendMessage($this->getMessage('gui.player-not-found'));
             return;
         }
-        if(strtolower($name) == strtolower($sender->getName()))
-        {
+        if(strtolower($name) == strtolower($sender->getName())){
             $sender->sendMessage($this->getMessage('gui.cant-report-self'));
             return;
         }
-        if($this->getServer()->getOfflinePlayer($this->selection[$sender->getName()])->isOp() && !$this->getConfig()->get('allow-reporting-ops'))
-        {
+        if($this->getServer()->getOfflinePlayer($this->reportCache[$sender->getName()])->isOp() && !$this->getConfig()->get('allow-reporting-ops')){
             $sender->sendMessage($this->getMessage('report.op'));
             return;
         }
-        if($this->getServer()->getOfflinePlayer($this->selection[$sender->getName()])->isBanned() && !$this->getConfig()->get('allow-reporting-banned-players'))
-        {
+        if($this->getServer()->getOfflinePlayer($this->reportCache[$sender->getName()])->isBanned() && !$this->getConfig()->get('allow-reporting-banned-players')){
             $sender->sendMessage($this->getMessage('report.banned'));
             return;
         }
-        $form = $this->FormAPI->createSimpleForm(function(Player $sender, array $data)
-        {
-            if($data[0] === null) return;
-            if($data[0] == count($this->getConfig()->get('reasons')))
-            {
-                if(!$this->getConfig()->get('allow-custom-reason')) return;
-                $form = $this->FormAPI->createCustomForm(function(Player $sender, array $data)
-                {
-                    if (count($data) < 2) return;
-                    if(!$data[1] || strlen($data[1]) < $this->getConfig()->get('custom-reason-min-length', 4) || strlen($data[1]) < $this->getConfig()->get('custom-reason-min-length', 4))
-                    {
+
+        $form = $this->FormAPI->createSimpleForm(function(Player $sender, array $data){
+            if($data[0] === null){
+                return;
+            }
+            if($data[0] == count($this->getConfig()->get('reasons'))){
+                if(!$this->getConfig()->get('allow-custom-reason')){
+                    return;
+                }
+                $form = $this->FormAPI->createCustomForm(function(Player $sender, array $data){
+                    if (count($data) < 2){
+                        return;
+                    }
+                    if(!$data[1] || strlen($data[1]) < $this->getConfig()->get('custom-reason-min-length', 4) || strlen($data[1]) < $this->getConfig()->get('custom-reason-min-length', 4)){
                         $sender->sendMessage($this->getMessage('report.bad-reason'));
                         return;
                     }
-                    $this->addReport($sender->getName(), $this->selection[$sender->getName()], $data[1]);
-                    $sender->sendMessage($this->getMessage('report.successful', $this->selection[$sender->getName()], $data[1]));
+                    $this->addReport($sender->getName(), $this->reportCache[$sender->getName()], $data[1]);
+                    $sender->sendMessage($this->getMessage('report.successful', $this->reportCache[$sender->getName()], $data[1]));
                 });
                 $form->setTitle($this->getMessage('gui.title'));
-                $form->addLabel($this->getMessage('gui.custom.label', $this->selection[$sender->getName()]));
+                $form->addLabel($this->getMessage('gui.custom.label', $this->reportCache[$sender->getName()]));
                 $form->addInput($this->getMessage('gui.custom.input'));
                 $form->sendToPlayer($sender);
                 return;
             }
-            $this->getServer()->getPluginManager()->callEvent($ev = new PlayerReportEvent($sender, $this->selection[$sender->getName()], $this->getConfig()->get('reasons')[$data[0]] ?? 'None'));
+
+            $this->getServer()->getPluginManager()->callEvent($ev = new PlayerReportEvent($sender, $this->reportCache[$sender->getName()], $this->getConfig()->get('reasons')[$data[0]] ?? 'None'));
             if(!$ev->isCancelled()){
-                $this->addReport($sender->getName(), $this->selection[$sender->getName()], $this->getConfig()->get('reasons')[$data[0]] ?? 'None');
-                $sender->sendMessage($this->getMessage('report.successful', $this->selection[$sender->getName()], $this->getConfig()->get('reasons')[$data[0]] ?? 'None'));
+                $this->addReport($sender->getName(), $this->reportCache[$sender->getName()], $this->getConfig()->get('reasons')[$data[0]] ?? 'None');
+                $sender->sendMessage($this->getMessage('report.successful', $this->reportCache[$sender->getName()], $this->getConfig()->get('reasons')[$data[0]] ?? 'None'));
             }
         });
         $form->setTitle($this->getMessage('gui.title'));
-        $form->setContent($this->getMessage('gui.content', $this->selection[$sender->getName()]));
-        foreach($this->getConfig()->get('reasons') as $reason)
-        {
+        $form->setContent($this->getMessage('gui.content', $this->reportCache[$sender->getName()]));
+        foreach($this->getConfig()->get('reasons') as $reason){
             $form->addButton($reason);
         }
-        if($this->getConfig()->get('allow-custom-reason')) $form->addButton($this->getMessage('gui.custom-reason'));
+        if($this->getConfig()->get('allow-custom-reason')){
+            $form->addButton($this->getMessage('gui.custom-reason'));
+        }
         $form->sendToPlayer($sender);
     }
 
-    private function sendAdminGUI(Player $sender)
-    {
-        $form = $this->FormAPI->createSimpleForm(function(Player $sender, array $data)
-        {
-            if($data[0] === null) return;
-            switch($data[0])
-            {
+    private function sendAdminGUI(Player $sender){
+        $form = $this->FormAPI->createSimpleForm(function(Player $sender, array $data){
+            if($data[0] === null){
+                return;
+            }
+            switch($data[0]){
                 case 0:
-                    $form = $this->FormAPI->createSimpleForm(function(Player $sender, array $data)
-                    {
-                        if($data[0] === null || count($this->reports->getAll()) < 1) return;
-                        $this->admin_selection[$sender->getName()] = $data[0];
-                        $form = $this->FormAPI->createSimpleForm(function(Player $sender, array $data)
-                        {
+                    $form = $this->FormAPI->createSimpleForm(function(Player $sender, array $data){
+                        if($data[0] === null || count($this->reports->getAll()) < 1){
+                            return;
+                        }
+                        $this->adminCache[$sender->getName()] = $data[0];
+
+                        $form = $this->FormAPI->createSimpleForm(function(Player $sender, array $data){
                             if($data[0] === null) return;
-                            $report = $this->reports->get($this->admin_selection[$sender->getName()]);
-                            switch($data[0])
-                            {
+                            $report = $this->reports->get($this->adminCache[$sender->getName()]);
+                            switch($data[0]){
                                 case 0:
                                     $this->getServer()->getPluginManager()->callEvent($ev = new ReportProcessedEvent($report['target'], $report['reason'], ReportProcessedEvent::PROCESS_TYPE_DELETE));
                                     if(!$ev->isCancelled()){
-                                        $this->deleteReport("id", $this->admin_selection[$sender->getName()]);
+                                        $this->deleteReport("id", $this->adminCache[$sender->getName()]);
                                         $sender->sendMessage($this->getMessage('admin.deleted'));
                                     }
                                     return;
@@ -229,12 +276,14 @@ class ReportUI extends PluginBase
                                     return;
                             }
                         });
-                        $report = $this->reports->get($this->admin_selection[$sender->getName()]);
+
+                        $report = $this->reports->get($this->adminCache[$sender->getName()]);
                         $form->setTitle($this->getMessage('admin.title'));
                         $count = 0;
-                        foreach($this->reports->getAll() as $_report)
-                        {
-                            if(strtolower($_report['target']) == strtolower($report['target'])) $count ++;
+                        foreach($this->reports->getAll() as $_report){
+                            if(strtolower($_report['target']) == strtolower($report['target'])){
+                                $count ++;
+                            }
                         }
                         $form->setContent($this->getMessage('admin.detail', $report['target'], $report['reporter'], date("Y-m-d h:i", $report['time']), $report['reason'], $count));
                         $form->addButton($this->getMessage('admin.button.delete'));
@@ -243,90 +292,61 @@ class ReportUI extends PluginBase
                         $form->addButton($this->getMessage('admin.button.back'));
                         $form->sendToPlayer($sender);
                     });
+
                     $form->setTitle($this->getMessage('admin.title'));
                     $form->setContent($this->getMessage('admin.content'));
-                    $foo = false;
-                    foreach($this->reports->getAll() as $report)
-                    {
-                        $foo = true;
+                    $reportExist = false;
+                    foreach($this->reports->getAll() as $report){
+                        $reportExist = true;
                         $form->addButton($this->getMessage('admin.button.report', $report['target'], date("Y-m-d h:i", $report['time'])));
                     }
-                    if(!$foo)
-                    {
+                    if(!$reportExist){
                         $form->setContent($form->getContent() . $this->getMessage('admin.no-report'));
                         $form->addButton($this->getMessage('admin.button.close'));
                     }
                     $form->sendToPlayer($sender);
                     break;
                 case 1:
-                    $form = $this->FormAPI->createCustomForm(function(Player $sender, array $data)
-                    {
-                        if(count($data) < 2) return;
-                        if(!$data[1] || !$this->getServer()->getOfflinePlayer($data[1])->getFirstPlayed())
-                        {
+                    $form = $this->FormAPI->createCustomForm(function(Player $sender, array $data){
+                        if(count($data) < 2){
+                            return;
+                        }
+                        if(!$data[1] || !$this->getServer()->getOfflinePlayer($data[1])->getFirstPlayed()){
                             $sender->sendMessage($this->getMessage('gui.player-not-found'));
                             return;
                         }
                         $this->deleteReport("reporter", $data[1]);
                         $sender->sendMessage($this->getMessage('admin.deleted-by-reporter', $data[1]));
                     });
+
                     $form->addLabel($this->getMessage('admin.delete-by-reporter-content'));
                     $form->addInput($this->getMessage('gui.input'));
                     $form->sendToPlayer($sender);
                     break;
                 case 2:
-                    $form = $this->FormAPI->createCustomForm(function(Player $sender, array $data)
-                    {
-                        if(count($data) < 2) return;
-                        if(!$data[1] || !$this->getServer()->getOfflinePlayer($data[1])->getFirstPlayed())
-                        {
+                    $form = $this->FormAPI->createCustomForm(function(Player $sender, array $data){
+                        if(count($data) < 2){
+                            return;
+                        }
+                        if(!$data[1] || !$this->getServer()->getOfflinePlayer($data[1])->getFirstPlayed()){
                             $sender->sendMessage($this->getMessage('gui.player-not-found'));
                             return;
                         }
                         $this->deleteReport("target", $data[1]);
                         $sender->sendMessage($this->getMessage('admin.deleted-by-target', $data[1]));
                     });
+
                     $form->addLabel($this->getMessage('admin.delete-by-target-content'));
                     $form->addInput($this->getMessage('gui.input'));
                     $form->sendToPlayer($sender);
                     break;
             }
         });
+
         $form->setContent($this->getMessage('admin.main-content'));
         $form->addButton($this->getMessage('admin.button.view-reports'));
         $form->addButton($this->getMessage('admin.button.delete-by-reporter'));
         $form->addButton($this->getMessage('admin.button.delete-by-target'));
         $form->sendToPlayer($sender);
-    }
-
-    public function save(){
-        $this->reports->save();
-    }
-
-    public function addReport(string $reporter, string $target, string $reason){
-        $reports = $this->reports->getAll();
-        array_unshift($reports, ['reporter'=>$reporter, 'target'=>$target, 'reason'=>$reason, 'time' => time()]);
-        $this->reports->setAll($reports);
-    }
-
-    public function deleteReport(string $search, $value){
-        if($search == "id"){
-            $reports = $this->reports->getAll();
-            array_splice($reports, $value, 1);
-            $this->reports->setAll($reports);
-        }else{
-            $reports = $this->reports->getAll();
-            for($i = 0; $i < count($reports); $i ++)
-                if(strtolower($reports[$i][$search]) == strtolower($value)){
-                    array_splice($reports, $i, 1);
-
-                    $i --;
-                }
-            $this->reports->setAll($reports);
-        }
-    }
-
-    public function getReports(){
-        return $this->reports;
     }
 }
