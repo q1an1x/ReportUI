@@ -40,7 +40,7 @@ class ReportUI extends PluginBase
         if($this->getConfig()->get("check-update", true)){
             $this->getLogger()->info("Checking update...");
             try{
-                if(($version = (new PluginDescription(file_get_contents("https://github.com/Taylcd/ReportUI/raw/master/plugin.yml")))->getVersion()) != $this->getDescription()->getVersion()){
+                if(($version = (new PluginDescription(file_get_contents("https://raw.githubusercontent.com/Taylcd/ReportUI/master/plugin.yml")))->getVersion()) != $this->getDescription()->getVersion()){
                     $this->getLogger()->notice("New version $version available! Get it here: " . $this->getDescription()->getWebsite());
                 } else {
                     $this->getLogger()->info("Already up-to-date.");
