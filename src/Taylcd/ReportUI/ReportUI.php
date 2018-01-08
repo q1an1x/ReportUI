@@ -78,12 +78,20 @@ class ReportUI extends PluginBase
     public function addReport(string $reporter, string $target, string $reason){
         $reports = $this->reports->getAll();
         array_unshift($reports, [
-            'reporter'=>$reporter,
-            'target'=>$target,
-            'reason'=>$reason,
+            'reporter' => $reporter,
+            'target' => $target,
+            'reason' => $reason,
             'time' => time()
         ]);
         $this->reports->setAll($reports);
+
+        if($this->getConfig()->get("enable-new-report-notification", true)){
+            foreach($this->getServer()->getOnlinePlayers() as $player){
+                if($player->hasPermission("report.admin.notification")){
+                    $player->sendMessage($this->getMessage("admin.new-report", $reporter, $target, $reason));
+                }
+            }
+        }
     }
 
     /**

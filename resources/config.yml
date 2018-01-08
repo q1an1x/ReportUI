@@ -19,3 +19,11 @@ allow-reporting-banned-players: false
 
 # Plugin will check for new version from Github
 check-update: true
+
+# Player who has the notification permission will receive
+# a message if someone got reported.
+enable-new-report-notification: true
+
+# Player who has the notification permission will receive
+# a message when they join the server if there's new reports
+enable-new-report-notification-on-join: true

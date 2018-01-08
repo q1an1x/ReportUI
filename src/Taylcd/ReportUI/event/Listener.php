@@ -13,10 +13,8 @@ class Listener implements \pocketmine\event\Listener{
     }
 
     public function onPlayerJoin(\pocketmine\event\player\PlayerJoinEvent $event){
-        if($event->getPlayer()->hasPermission("report.admin.notification")){
-            if($count = count($this->plugin->getReports()->getAll())){
-                $event->getPlayer()->sendMessage($this->plugin->getMessage('admin.unread-reports', $count));
-            }
+        if($this->plugin->getConfig()->get("enable-new-report-notification-on-join", true) && $event->getPlayer()->hasPermission("report.admin.notification") && $count = count($this->plugin->getReports()->getAll())){
+            $event->getPlayer()->sendMessage($this->plugin->getMessage('admin.unread-reports', $count));
         }
     }
 }

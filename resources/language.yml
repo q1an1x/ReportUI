@@ -38,3 +38,4 @@ admin:
     delete-by-reporter: "Delete reports by reporter"
     delete-by-target: "Delete reports by reported"
   unread-reports: "§eThere are §f%0§e new reports."
+  new-report: "§eA new report has been submitted by %0. §7(Reported Player: %1, Reason: %2)"
