@@ -17,6 +17,8 @@ use Taylcd\ReportUI\task\SaveTask;
 
 class ReportUI extends PluginBase
 {
+    const CONFIG_VERSION = 2;
+
     /** @var Config */
     protected $lang;
 
@@ -46,6 +48,13 @@ class ReportUI extends PluginBase
             } catch(\Exception $ex) {
                 $this->getLogger()->warning("Unable to check update.");
             }
+        }
+
+        if($this->getConfig()->get('config-version') < self::CONFIG_VERSION){
+            rename($this->getDataFolder() . "config.yml", $this->getDataFolder() . "config.old.yml");
+            $this->saveDefaultConfig();
+            $this->getConfig()->reload();
+            $this->getLogger()->notice($this->getMessage("console.config-outdated"));
         }
     }
 

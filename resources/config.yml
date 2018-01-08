@@ -1,3 +1,5 @@
+config-version: 2
+
 save-period: 600
 # Default reasons available when report
 reasons:

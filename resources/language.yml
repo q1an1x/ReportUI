@@ -39,3 +39,5 @@ admin:
     delete-by-target: "Delete reports by reported"
   unread-reports: "§eThere are §f%0§e new reports."
   new-report: "§eA new report has been submitted by %0. §7(Reported Player: %1, Reason: %2)"
+console:
+  config-outdated: "Looks like you have updated your plugin, your config file was outdated and has been updated automatically, please note that all settings have been reset to default. Your original config file is renamed to config.old.yml."
