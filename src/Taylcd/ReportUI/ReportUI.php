@@ -30,6 +30,7 @@ class ReportUI extends PluginBase
 
     private $reportCache = [];
     private $adminCache = [];
+    private $dropdownCache = [];
 
     public function onLoad(){
         $this->saveDefaultConfig();
@@ -177,13 +178,26 @@ class ReportUI extends PluginBase
             if(count($data) < 2){
                 return;
             }
-            $this->reportCache[$sender->getName()] = $data[1];
+
+            if($this->getConfig()->get("use-dropdown-select", false)){
+                $this->reportCache[$sender->getName()] = $this->dropdownCache[$data[1]];
+            } else {
+                $this->reportCache[$sender->getName()] = $data[1];
+            }
+
             $this->sendReasonSelect($sender);
         });
 
         $form->setTitle($this->getMessage('gui.title'));
         $form->addLabel($this->getMessage('gui.label'));
-        $form->addInput($this->getMessage('gui.input'));
+        if($this->getConfig()->get("use-dropdown-select", false)){
+            foreach($this->getServer()->getOnlinePlayers() as $player){
+                array_push($this->dropdownCache, $player->getName());
+            }
+            $form->addDropdown($this->getMessage('gui.input'), $this->dropdownCache);
+        } else {
+            $form->addInput($this->getMessage('gui.input'));
+        }
         $form->sendToPlayer($sender);
     }
 

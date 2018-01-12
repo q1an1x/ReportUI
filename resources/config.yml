@@ -29,3 +29,8 @@ enable-new-report-notification: true
 # Player who has the notification permission will receive
 # a message when they join the server if there's new reports
 enable-new-report-notification-on-join: true
+
+# If enabled, you will have to select an online player from a dropdown list when reporting
+# And you can no longer report players that are not online
+# This feature will be improved in the future
+use-dropdown-select: false
