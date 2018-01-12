@@ -180,7 +180,7 @@ class ReportUI extends PluginBase
             }
 
             if($this->getConfig()->get("use-dropdown-select", false)){
-                $this->reportCache[$sender->getName()] = $this->dropdownCache[$data[1]];
+                $this->reportCache[$sender->getName()] = $this->dropdownCache[$sender->getName()][$data[1]];
             } else {
                 $this->reportCache[$sender->getName()] = $data[1];
             }
@@ -192,9 +192,9 @@ class ReportUI extends PluginBase
         $form->addLabel($this->getMessage('gui.label'));
         if($this->getConfig()->get("use-dropdown-select", false)){
             foreach($this->getServer()->getOnlinePlayers() as $player){
-                array_push($this->dropdownCache, $player->getName());
+                array_push($this->dropdownCache[$sender->getName()], $player->getName());
             }
-            $form->addDropdown($this->getMessage('gui.input'), $this->dropdownCache);
+            $form->addDropdown($this->getMessage('gui.input'), $this->dropdownCache[$sender->getName()]);
         } else {
             $form->addInput($this->getMessage('gui.input'));
         }
