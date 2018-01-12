@@ -17,7 +17,7 @@ use Taylcd\ReportUI\task\SaveTask;
 
 class ReportUI extends PluginBase
 {
-    const CONFIG_VERSION = 2;
+    const CONFIG_VERSION = 3;
 
     /** @var Config */
     protected $lang;
