@@ -15,8 +15,7 @@ use Taylcd\ReportUI\event\PlayerReportEvent;
 use Taylcd\ReportUI\event\ReportProcessedEvent;
 use Taylcd\ReportUI\task\SaveTask;
 
-class ReportUI extends PluginBase
-{
+class ReportUI extends PluginBase{
     const CONFIG_VERSION = 3;
 
     /** @var Config */
@@ -189,13 +188,17 @@ class ReportUI extends PluginBase
         });
 
         $form->setTitle($this->getMessage('gui.title'));
-        $form->addLabel($this->getMessage('gui.label'));
         if($this->getConfig()->get("use-dropdown-select", false)){
+            $form->addLabel($this->getMessage('gui.select-label'));
+            $this->dropdownCache[$sender->getName()] = [];
             foreach($this->getServer()->getOnlinePlayers() as $player){
-                array_push($this->dropdownCache[$sender->getName()], $player->getName());
+                if($player->getName() !== null){
+                    array_push($this->dropdownCache[$sender->getName()], $player->getName());
+                }
             }
-            $form->addDropdown($this->getMessage('gui.input'), $this->dropdownCache[$sender->getName()]);
+            $form->addDropdown($this->getMessage('gui.dropdown'), $this->dropdownCache[$sender->getName()]);
         } else {
+            $form->addLabel($this->getMessage('gui.label'));
             $form->addInput($this->getMessage('gui.input'));
         }
         $form->sendToPlayer($sender);

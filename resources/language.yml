@@ -9,6 +9,8 @@ gui:
   custom:
     label: "You are now reporting §e%0§f.\nPlease enter a reason."
     input: "Reason"
+  select-label: "Please select a player to report, be aware that abusing the report system will get yourself banned.\nYou can also use /report <Player> to report."
+  dropdown: "Select a player"
 report:
   successful: "§eYour report has been submitted. §7(Reported Player: %0, Reason: %1)"
   bad-reason: "§cYour reason was too long or too short."
