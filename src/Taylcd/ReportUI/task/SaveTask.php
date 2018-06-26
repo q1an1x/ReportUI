@@ -2,9 +2,9 @@
 
 namespace Taylcd\ReportUI\task;
 
-use pocketmine\scheduler\PluginTask;
+use pocketmine\scheduler\Task;
 
-class SaveTask extends PluginTask{
+class SaveTask extends Task {
     public function onRun(int $currentTick){
         $this->getOwner()->save();
     }
