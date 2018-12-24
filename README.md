@@ -1,4 +1,4 @@
-This plugin is not tested on the latest PocketMine(later than API 3.0.0) and may not be compatible.
+*This plugin is not tested on the latest PocketMine(later than API 3.0.0) and may not be compatible.*
 
 # ReportUI
 A plugin allows players to report harmful behaviors, with a beautiful(?) User-Interface.
