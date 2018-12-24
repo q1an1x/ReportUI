@@ -1,11 +1,11 @@
+This plugin is not tested on the latest PocketMine(later than API 3.0.0) and may not be compatible.
+
 # ReportUI
 A plugin allows players to report harmful behaviors, with a beautiful(?) User-Interface.
 
 This plugin requires FormAPI(https://github.com/jojoe77777/FormAPI) to run.
 
 Download compilied plugins here: https://github.com/Taylcd/ReportUI/releases
-
-**Looking for a custom Bukkit/PocketMine plugin? I can make that for you.** Contact: [Twitter](http://twitter.com/_Taylcd)/Email: this@taylcd.com
 
 ## Commands
 - /report - Open Report GUI
